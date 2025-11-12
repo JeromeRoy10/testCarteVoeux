@@ -1,14 +1,13 @@
-<!doctype html>
-<html>
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AR - Rotation fix</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+  <title>AR Example with Aframe and MindAR</title>
 
   <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.6.0/dist/aframe-extras.min.js"></script>
 </head>
+
 <body>
   <a-scene
     mindar-image="imageTargetSrc: ./ARtargetImage.mind; maxTrack: 1; filterMinCF:0.001; filterBeta:30; missTolerance:30;"
@@ -24,78 +23,18 @@
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
+    <!-- MindAR target -->
     <a-entity mindar-image-target="targetIndex: 0">
-      <!-- wrapper visible pour debug (on le garde) -->
-      <a-entity id="model-wrapper" position="0 0 0" rotation="0 0 0">
+      <!-- Ta rotation doit être ici -->
+      <a-entity id="model-wrapper" position="0 0 0" rotation="-90 0 0">
         <a-gltf-model
-          id="DerPlanet"
+          animation-mixer
           src="#Planet"
           position="0 0 0"
           scale="0.5 0.5 0.5"
-          animation-mixer
+          id="DerPlanet"
         ></a-gltf-model>
       </a-entity>
     </a-entity>
   </a-scene>
-
-  <script>
-    // Attendre que A-Frame soit prêt
-    window.addEventListener('DOMContentLoaded', () => {
-      const modelEl = document.querySelector('#DerPlanet');
-      const wrapper = document.querySelector('#model-wrapper');
-
-      if (!modelEl) {
-        console.warn('Model element introuvable');
-        return;
-      }
-
-      // Écoute l'événement model-loaded — on reçoit alors le GLTF complet
-      modelEl.addEventListener('model-loaded', (evt) => {
-        console.log('model-loaded event reçu', evt);
-
-        // méthode 1 : rotation sur l'objet gltf (scene) -> robuste
-        // evt.detail.model est l'objet GLTF retourné par le loader (GLTF.scene)
-        const gltf = evt.detail && evt.detail.model;
-        if (gltf && gltf.scene) {
-          // Log pour debug : orientation actuelle
-          console.log('Avant rotation, gltf.scene.rotation (rad):', gltf.scene.rotation);
-
-          // Exemple : mettre le modèle "de face" -> tester -90, 90, 0...
-          // Ici on met X = -90°, Y = 0°, Z = 0°
-          gltf.scene.rotation.set(
-            THREE.MathUtils.degToRad(-90),
-            THREE.MathUtils.degToRad(0),
-            THREE.MathUtils.degToRad(0)
-          );
-
-          console.log('Après rotation, gltf.scene.rotation (rad):', gltf.scene.rotation);
-        } else {
-          console.warn('Aucun GLTF.scene disponible — tentative d\'accès via object3D');
-          // fallback : forcer rotation via A-Frame object3D
-          const obj = modelEl.getObject3D('mesh') || modelEl.getObject3D('scene');
-          if (obj) {
-            obj.rotation.set(
-              THREE.MathUtils.degToRad(-90),
-              THREE.MathUtils.degToRad(0),
-              THREE.MathUtils.degToRad(0)
-            );
-            console.log('Rotation appliquée via object3D fallback');
-          } else {
-            console.warn('Impossible de trouver object3D du modèle');
-          }
-        }
-
-        // Optionnel : reset rotation du wrapper si tu l'avais changé
-        wrapper.setAttribute('rotation', '0 0 0');
-      });
-
-      // DEBUG HELP: afficher transformations CONSOLIDÉES toutes les 500ms (utile pour voir si MindAR réécrit)
-      setInterval(() => {
-        const wRot = wrapper.getAttribute('rotation');
-        const wPos = wrapper.getAttribute('position');
-        console.log('Wrapper pos/rot:', wPos, wRot);
-      }, 2000);
-    });
-  </script>
 </body>
-</html>
