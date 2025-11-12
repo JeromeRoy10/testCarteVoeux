@@ -3,6 +3,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">  
   <title>AR Example with Aframe and MindAR</title>
 
+  <!-- Librairies nécessaires -->
   <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.6.0/dist/aframe-extras.min.js"></script>
@@ -10,27 +11,29 @@
 
 <body>
   <a-scene
-    mindar-image="imageTargetSrc: ./ARtargetImage.mind; maxTrack: 1; filterMinCF:0.001; filterBeta:30; missTolerance:30;"
+    mindar-image="imageTargetSrc: ./ARtargetImage.mind; maxTrack: 1; filterMinCF: 0.001; filterBeta: 30; missTolerance: 30;"
     color-space="sRGB"
-    renderer="colorManagement: true, physicallyCorrectLights"
+    renderer="colorManagement: true; physicallyCorrectLights: true"
     device-orientation-permission-ui="enabled: false"
     vr-mode-ui="enabled: false"
     id="scene"
   >
+    <!-- Chargement du modèle -->
     <a-assets>
       <a-asset-item id="Planet" response-type="arraybuffer" src="./on4.glb"></a-asset-item>
     </a-assets>
 
+    <!-- Caméra -->
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-    <!-- MindAR target -->
+    <!-- Cible MindAR -->
     <a-entity mindar-image-target="targetIndex: 0">
-      <!-- Ta rotation doit être ici -->
-      <a-entity id="model-wrapper" position="0 0 0" rotation="-90 0 0">
+      <!-- Rotation pour coucher le modèle à plat -->
+      <a-entity id="model-wrapper" rotation="-90 0 0" position="0 0 0.2">
         <a-gltf-model
           animation-mixer
           src="#Planet"
-          position="-90 0 0"
+          position="0 0 0"
           scale="0.5 0.5 0.5"
           id="DerPlanet"
         ></a-gltf-model>
@@ -38,4 +41,3 @@
     </a-entity>
   </a-scene>
 </body>
-
